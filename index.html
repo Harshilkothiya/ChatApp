@@ -1,29 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/applogo.png" type="image/x-icon">
-    <title>Hey Chat</title>
-    <link rel="stylesheet" href="/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+  <title>Chat Zone</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-    <section class="chat__section">
-        <div class="brand">
-            <img height="55" src="/logo.png" alt="">
-            <h1>Hey Chat</h1>
-        </div>
-        <div class="message__area">
-         
-        </div>
-        <div>
-            <textarea id="textarea" cols="30" rows="1" placeholder="Write a message..."></textarea>
-        </div>
-    </section>
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="/client.js"></script>
-</body>
+  <div class="chat-app">
+    <div class="sidebar">
+      <div class="header">
+        <h1>Chat Zone</h1>
+      </div>
+      <input type="text" class="search-bar" placeholder="Search User...">
+      <ul class="userlist">
+        
+      </ul>
+    </div>
+    <div class="chat-window">
+      <div class="messages">
+        <!-- Example static messages -->
+        
+      </div>
+      <div class="message-input">
+        <input id="inputarea" type="text" placeholder="Type a message...">
+        <button class="send-button">Send</button>
+      </div>
+    </div>
+  </div>
 
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="/client.js"></script>
+</body>
 </html>

@@ -1,57 +1,85 @@
 const socket = io();
-const textarea = document.querySelector("#textarea");
-const massageArea = document.querySelector('.message__area');
+const inputarea = document.querySelector("#inputarea");
+const messageArea = document.querySelector('.messages');
+const userList = document.querySelector('.userlist');
+const sendButton = document.querySelector('.send-button');
 
 let namee;
 
+// Prompt user for their name
 do {
-  namee = prompt("Enter Your Name: ");
+    namee = prompt("Enter Your Name: ");
 } while (!namee);
 
-textarea.addEventListener("keyup",(e)=>{
-    if(e.key === 'Enter') {
-        sendMessage(e.target.value)
+// Notify the server of the new user
+socket.emit("new-user", namee);
+
+// Add the user's name to the list on the client
+document.addEventListener("DOMContentLoaded", () => {
+    if (namee) {
+        console.log("User added:", namee);
+        let use = `<li>${namee}</li>`;
+        userList.innerHTML += use;
     }
 });
 
-function sendMessage(message){
-   let msg ={
-        user : namee,
-        message : message.trim(),
+// Send message on "Enter" key press
+inputarea.addEventListener("keyup", (e) => {
+    if (e.key === 'Enter' && e.target.value.trim()) {
+        sendMessage(e.target.value);
     }
+});
 
-    appendMassage(msg, 'outgoing');
+// Send message on send button click
+sendButton.addEventListener('click', () => {
+  sendMessage(inputarea.value);
+});
 
-    textarea.value ="";
+// Send message function
+function sendMessage(message) {
+    let msg = {
+        user: namee,
+        message: message.trim(),
+    };
 
-    scroolToBottom();
+    appendMessage(msg, 'sender');
+    inputarea.value = ""; // Clear input field
+    scrollToBottom();
 
-    // send toserver
+    // Send to server
     socket.emit("message", msg);
 }
 
-function appendMassage(msg, type){
+// Append message to the chat area
+function appendMessage(msg, type) {
     let mainDiv = document.createElement('div');
     let className = type;
     mainDiv.classList.add(className, 'message');
 
     let markUp = `
-    <h4>${msg.user}</h4>
-    <p>${msg.message}</p>
-    `
+        <div class="sender-name">${msg.user}</div>
+        <div class="message-content">${msg.message}</div>
+    `;
     mainDiv.innerHTML = markUp;
-    massageArea.appendChild(mainDiv);
+    messageArea.appendChild(mainDiv);
 }
 
+// Receive a message from the server
+socket.on("message", (msg) => {
+    appendMessage(msg, 'receiver');
+    scrollToBottom();
+});
 
-//resive message
-
-socket.on('message', (msg)=>{
-    appendMassage(msg, 'incoming');
-    scroolToBottom();
-})
-
-
-function scroolToBottom(){
-    massageArea.scrollTop = massageArea.scrollHeight;
+// Scroll to bottom of the message area
+function scrollToBottom() {
+    messageArea.scrollTop = messageArea.scrollHeight;
 }
+
+// Update user list when a user connects or disconnects
+socket.on("update-userlist", (users) => {
+    userList.innerHTML = ""; // Clear the existing user list
+    users.forEach(user => {
+        let userElement = `<li>${user.username}</li>`;
+        userList.innerHTML += userElement;
+    });
+});
